@@ -9,11 +9,14 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#define nl() { putchar('\n'); front = 1; }
-#define indent() { for (unsigned int j = 0; j < depth; ++j) { putchar('\t'); } }
+#define nl() { pc('\n'); front = 1; }
+#define indent() { for (unsigned int j = 0; j < depth; ++j) { pc('\t'); } }
 #define debug() { fprintf(stderr, "(qt=%d cm=%d fr=%d dp=%u c=%c)", quoted, commented, front, depth, buf[i]); }
 
-				
+ssize_t	pc(char x) {
+	return write(1, &x, 1);
+}
+
 int main(int argc, char **argv) {
 	_Bool quoted = 0, commented = 0, front = 1;
 	unsigned int depth = 0;
@@ -48,12 +51,12 @@ int main(int argc, char **argv) {
 				}
 			}
 			if (commented) {
-				putchar(buf[i]);
+				pc(buf[i]);
 				continue;
 			}
 			if (buf[i] == '}') {
 				if (!front) {
-					putchar(';');
+					pc(';');
 					nl();
 				}
 				if (--depth == (unsigned int) -1) {
@@ -61,7 +64,7 @@ int main(int argc, char **argv) {
 					return 1;
 				}
 				indent();
-				putchar('}');
+				pc('}');
 				nl();
 				continue;
 			}
@@ -77,7 +80,7 @@ int main(int argc, char **argv) {
 					if (buf[i+1] == ' ') {
 						continue;
 					}
-					putchar(' ');
+					pc(' ');
 				}
 				continue;
 			} else if (buf[i] == '\t') {
@@ -87,15 +90,15 @@ int main(int argc, char **argv) {
 				indent();
 			}
 			if (buf[i] == ';') {
-				putchar(';');
+				pc(';');
 				nl();
 			} else if (buf[i] == '{') {
 				++depth;
-				putchar('{');
+				pc('{');
 				nl();
 			} else {
 				front = 0;
-				putchar(buf[i]);
+				pc(buf[i]);
 			}
 		}
 	}
