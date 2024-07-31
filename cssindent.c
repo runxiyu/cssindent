@@ -13,14 +13,16 @@
 #define indent() { for (unsigned int j = 0; j < depth; ++j) { pc('\t'); } }
 #define debug() { fprintf(stderr, "(qt=%d cm=%d fr=%d dp=%u c=%c)", quoted, commented, front, depth, buf[i]); }
 
-ssize_t	pc(char x) {
+ssize_t pc(char x)
+{
 	return write(1, &x, 1);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	_Bool quoted = 0, commented = 0, front = 1;
 	unsigned int depth = 0;
-	unsigned int source_lines = 1; 
+	unsigned int source_lines = 1;
 	int fd;
 	if (argc == 1) {
 		fd = 0;
@@ -30,23 +32,24 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Too many arguments\n");
 		return 1;
 	}
-	for (;;) {                             
-	        auto char buf[4096];                    
-	        ssize_t len = read(fd, &buf, 4096);
-	        if (len <= 0)                      
-	                break;
-	        for (ssize_t i = 0; i < len; ++i) {
-			if (buf[i] == '/' && buf[i+1] == '*') {
+	for (;;) {
+		auto char buf[4096];
+		ssize_t len = read(fd, &buf, 4096);
+		if (len <= 0)
+			break;
+		for (ssize_t i = 0; i < len; ++i) {
+			if (buf[i] == '/' && buf[i + 1] == '*') {
 				commented = 1;
 				write(1, "/*", 2);
 				continue;
-			} else if (buf[i] == '*' && buf[i+1] == '/') {
+			} else if (buf[i] == '*' && buf[i + 1] == '/') {
 				if (commented) {
 					commented = 0;
 					write(1, "*/", 2);
 					continue;
 				} else {
-					fprintf(stderr, "%u: too many */\n", source_lines);
+					fprintf(stderr, "%u: too many */\n",
+						source_lines);
 					return 1;
 				}
 			}
@@ -59,8 +62,9 @@ int main(int argc, char **argv) {
 					pc(';');
 					nl();
 				}
-				if (--depth == (unsigned int) -1) {
-					fprintf(stderr, "%u: too many }\n", source_lines);
+				if (--depth == (unsigned int)-1) {
+					fprintf(stderr, "%u: too many }\n",
+						source_lines);
 					return 1;
 				}
 				indent();
@@ -69,7 +73,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			if (buf[i] == '\n') {
-				++ source_lines;
+				++source_lines;
 				continue;
 			} else if (buf[i] == '\t') {
 				continue;
@@ -77,7 +81,7 @@ int main(int argc, char **argv) {
 			if (buf[i] == ' ') {
 				if (front) {
 				} else if (!quoted && !commented) {
-					if (buf[i+1] == ' ') {
+					if (buf[i + 1] == ' ') {
 						continue;
 					}
 					pc(' ');
