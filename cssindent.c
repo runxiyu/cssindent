@@ -62,11 +62,12 @@ int main(int argc, char **argv)
 					pc(';');
 					nl();
 				}
-				if (--depth == (unsigned int)-1) {
+				if (depth == 0) {
 					fprintf(stderr, "%u: too many }\n",
 						source_lines);
 					return 1;
 				}
+				--depth;
 				indent();
 				pc('}');
 				nl();
