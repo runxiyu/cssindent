@@ -46,8 +46,8 @@ int main(int argc, char **argv)
 			} else if (buf[i] == '*' && buf[i + 1] == '/') {
 				if (commented) {
 					commented = 0;
-					write(1, "*/", 2);
-					++i;
+					write(1, "*/\n", 3);
+					i+=2;
 					continue;
 				} else {
 					fprintf(stderr, "%u: too many */\n",
