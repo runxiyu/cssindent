@@ -9,10 +9,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-#define nl() { pc('\n'); front = 1; }
-#define indent() { for (unsigned int j = 0; j < depth; ++j) { pc('\t'); } }
-#define debug() { fprintf(stderr, "(qt=%d cm=%d fr=%d dp=%u c=%c)", quoted, commented, front, depth, buf[i]); }
-
 ssize_t pc(char x)
 {
 	return write(1, &x, 1);
@@ -47,7 +43,7 @@ int main(int argc, char **argv)
 				if (commented) {
 					commented = 0;
 					write(1, "*/\n", 3);
-					i+=2;
+					i += 2;
 					continue;
 				} else {
 					fprintf(stderr, "%u: too many */\n",
@@ -62,7 +58,8 @@ int main(int argc, char **argv)
 			if (buf[i] == '}') {
 				if (!front) {
 					pc(';');
-					nl();
+					pc('\n');
+					front = 1;
 				}
 				if (depth == 0) {
 					fprintf(stderr, "%u: too many }\n",
@@ -70,9 +67,12 @@ int main(int argc, char **argv)
 					return 1;
 				}
 				--depth;
-				indent();
+				for (unsigned int j = 0; j < depth; ++j) {
+					pc('\t');
+				}
 				pc('}');
-				nl();
+				pc('\n');
+				front = 1;
 				continue;
 			}
 			if (buf[i] == '\n') {
@@ -94,15 +94,19 @@ int main(int argc, char **argv)
 				continue;
 			}
 			if (front) {
-				indent();
+				for (unsigned int j = 0; j < depth; ++j) {
+					pc('\t');
+				}
 			}
 			if (buf[i] == ';') {
 				pc(';');
-				nl();
+				pc('\n');
+				front = 1;
 			} else if (buf[i] == '{') {
 				++depth;
 				pc('{');
-				nl();
+				pc('\n');
+				front = 1;
 			} else {
 				front = 0;
 				pc(buf[i]);
