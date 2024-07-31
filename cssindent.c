@@ -72,6 +72,8 @@ int main(int argc, char **argv)
 				}
 				pc('}');
 				pc('\n');
+				if (depth == 0)
+					pc('\n');
 				front = 1;
 				continue;
 			}
